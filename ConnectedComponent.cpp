@@ -5,26 +5,13 @@
 #include <sstream>
 #include <algorithm>
 #include <iomanip>
+#include "ConnectedComponent.h"
 
-namespace MFNLIN003
-{
-    class ConnectedComponent {
-        public:
-           int num_pixels;//number of pixels
-           int id;//unique id for component
-           std::vector< std::pair<int,int> >coordinates;// store the pixels in that component ((x,y) pairs)
-
-            //constuctors:
-            //constuctor
-            ConnectedComponent(void);
-            //destructor
-            ~ConnectedComponent();
-            //Copy COnstructor
-            ConnectedComponent(const ConnectedComponent & cc);
-            //Move Constructor
-            ConnectedComponent(ConnectedComponent && cc);
-
-
-
-    };
-}
+//constuctors:
+MFNLIN003::ConnectedComponent::ConnectedComponent(){}
+//Destructor
+MFNLIN003::ConnectedComponent::~ConnectedComponent(){}
+//Copy constructor
+MFNLIN003::ConnectedComponent::ConnectedComponent(const ConnectedComponent & cc){}
+//Move constructor
+MFNLIN003::ConnectedComponent:: ConnectedComponent(ConnectedComponent && cc){}
