@@ -20,7 +20,10 @@ namespace MFNLIN003
             //destructor
             ~ConnectedComponent();
             //Copy COnstructor
-            
+            ConnectedComponent(const ConnectedComponent & cc);
+            //Move Constructor
+            ConnectedComponent(ConnectedComponent && cc);
+
 
 
     };
