@@ -5,6 +5,7 @@
 #include <sstream>
 #include <algorithm>
 #include <iomanip>
+#include <utility>
 
 namespace MFNLIN003
 {
@@ -16,7 +17,7 @@ namespace MFNLIN003
 
             //constuctors:
             //constuctor
-            ConnectedComponent(void);
+            ConnectedComponent(int id, int num_pixels);
             //destructor
             ~ConnectedComponent();
             //Copy COnstructor
