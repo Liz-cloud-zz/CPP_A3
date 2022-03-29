@@ -25,6 +25,14 @@ namespace MFNLIN003{
             int max;// maximum intensity in image
             std::string comment ="";//image comment
             std::string version;//image version
+
+            //constructors
+            PGMimageProcessor(void);//constructor
+            ~PGMimageProcessor();//destructor
+            PGMimageProcessor(const PGMimageProcessor & pgmip);//copy constructor
+            PGMimageProcessor(PGMimageProcessor && pgmip);//move constructor
+
+
         unsigned char *readFile(std::string filename);//read file contents from file
         bool writeComponents(const std::string & outFileName);//write data to file
         int extractComponents(unsigned char threshold, int minValidSize);//extract cconnected commponents
