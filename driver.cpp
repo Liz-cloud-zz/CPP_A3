@@ -2,7 +2,8 @@
 #include <string>
 
 int main(){
-
+    MFNLIN003::PGMimageProcessor pgmiP;
+    unsigned char * img=pgmiP.readFile("/examples/chess.pgm");
 
      return 0;
 }
