@@ -4,6 +4,11 @@
 int main(){
     MFNLIN003::PGMimageProcessor pgmiP;
     unsigned char * img=pgmiP.readFile("/examples/chess.pgm");
+    size_t size= pgmiP.columns*pgmiP.rows;
+    for(size_t i =0;i<size;++i){
+        std::cout<< img[i];
+
+    }
 
      return 0;
 }
