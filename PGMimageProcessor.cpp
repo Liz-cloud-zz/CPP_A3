@@ -5,7 +5,9 @@
   * @brief Construct a new MFNLIN003::PGMimageProcessor::PGMimageProcessor object
   * 
   */
-MFNLIN003::PGMimageProcessor::PGMimageProcessor(){}
+MFNLIN003::PGMimageProcessor::PGMimageProcessor(std::string fil_n){
+    MFNLIN003::PGMimageProcessor::filename=fil_n;
+}
 
 /**
  * @brief Destroy the MFNLIN003::PGMimageProcessor::PGMimageProcessor object
@@ -47,11 +49,11 @@ MFNLIN003::PGMimageProcessor::PGMimageProcessor(PGMimageProcessor && pgmip){
       MFNLIN003::PGMimageProcessor::version=pgmip.version;
 }
 
-unsigned char * MFNLIN003::PGMimageProcessor::readFile(std::string filename){
+unsigned char * MFNLIN003::PGMimageProcessor::readFile(){
     int x = 0, y = 0;//intialise coordinate
 
     std::stringstream ss;
-    std::ifstream infile(filename, std::ios::binary);
+    std::ifstream infile(MFNLIN003::PGMimageProcessor::filename, std::ios::binary);
     std::string inputLine="";
     if(!infile){
         std::cout <<"Cannot open file! File does not exist"<<std::endl;
@@ -92,3 +94,16 @@ unsigned char * MFNLIN003::PGMimageProcessor::readFile(std::string filename){
         return image0;
     }
 }
+
+// bool MFNLIN003::PGMimageProcessor::writeComponents(const std::string & outFileName){
+//     std::cout<<"output frame "<<std::endl;
+//     std::ofstream ofstream;
+//     unsigned char* image0=readFile();
+//     ofstream.write(reinterpret_cast< char *>(image0),(::width*MFNLIN003::FrameSequence::height)*sizeof(unsigned char));
+//     ofstream.close();
+//     //clear 1D array
+//     delete [] image0;
+//     // std::cout<<i<<std::endl;
+//     //}
+//     //   std::cout<<"done"<<std::endl;
+// }    

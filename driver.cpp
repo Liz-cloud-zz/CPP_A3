@@ -2,12 +2,11 @@
 #include <string>
 
 int main(){
-    MFNLIN003::PGMimageProcessor pgmiP;
-    unsigned char * img=pgmiP.readFile("/examples/chess.pgm");
+    MFNLIN003::PGMimageProcessor pgmiP("/home/linda/Desktop/C++/A3/examples/chess.pgm");
+    unsigned char * img=pgmiP.readFile();
     size_t size= pgmiP.columns*pgmiP.rows;
     for(size_t i =0;i<size;++i){
         std::cout<< img[i];
-
     }
 
      return 0;
