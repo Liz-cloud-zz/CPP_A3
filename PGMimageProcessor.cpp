@@ -95,15 +95,33 @@ unsigned char * MFNLIN003::PGMimageProcessor::readFile(){
     }
 }
 
-// bool MFNLIN003::PGMimageProcessor::writeComponents(const std::string & outFileName){
-//     std::cout<<"output frame "<<std::endl;
-//     std::ofstream ofstream;
-//     unsigned char* image0=readFile();
-//     ofstream.write(reinterpret_cast< char *>(image0),(::width*MFNLIN003::FrameSequence::height)*sizeof(unsigned char));
-//     ofstream.close();
-//     //clear 1D array
-//     delete [] image0;
-//     // std::cout<<i<<std::endl;
-//     //}
-//     //   std::cout<<"done"<<std::endl;
-// }    
+/**
+ * @brief create a new PGM file which contains all current components
+          (255=component pixel, 0 otherwise) and write this to outFileName as a
+          valid PGM. the return value indicates success of operation
+ * @param outFileName 
+ * @return true 
+ * @return false 
+ */
+bool MFNLIN003::PGMimageProcessor::writeComponents(const std::string & outFileName){
+    std::cout<<"output frame "<<std::endl;
+    std::ofstream ofstream;
+    unsigned char* image0=readFile();
+    //write to outfile
+    ofstream.write(reinterpret_cast< char *>(image0),(MFNLIN003::PGMimageProcessor::columns*MFNLIN003::PGMimageProcessor::rows)*sizeof(unsigned char));
+    ofstream.close();
+    //clear 1D array
+    delete [] image0;
+    //check if file not empty:
+    std::ifstream infile(outFileName, std::ios::binary);
+    if (infile.peek() == std::ifstream::traits_type::eof() )
+    {
+        return false;
+
+    }
+    return true;
+
+    // std::cout<<i<<std::endl;
+    //}
+    //   std::cout<<"done"<<std::endl;
+}    
