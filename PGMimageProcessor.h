@@ -29,7 +29,7 @@ namespace MFNLIN003{
         unsigned char *readFile();//read file contents from file
         bool writeComponents(const std::string & outFileName);//write data to file
         bool checkForeGround(unsigned char character, unsigned char threshold, int minValidSize);//check if point is a foreground
-        bool checkConnectComp(unsigned char ** image,std::pair<int, int> p,unsigned char threshold, int minValidSize);
+        bool checkValidRange(int minSize, int maxSize);//check if commponent is within range else  it needs to be filtered
         int extractComponents(unsigned char threshold, int minValidSize);//extract cconnected commponents
      
         int filterComponentsBySize(int minSize, int maxSize);//contains current components

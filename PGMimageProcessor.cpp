@@ -109,7 +109,7 @@ bool MFNLIN003::PGMimageProcessor::writeComponents(const std::string & outFileNa
     std::ofstream ofstream;
     int image[MFNLIN003::PGMimageProcessor::rows][MFNLIN003::PGMimageProcessor::columns]={0};//initialise it zero
         //Loop thru cointainer and write 255 as pixel and coordinate
-    for(const auto & container : concomp_vector){
+    for(const auto & container : MFNLIN003::PGMimageProcessor::concomp_vector){
         auto conncomp=container.get();
         for(const auto & point :conncomp->coordinates ){
             image[point.first][point.second]=255;
@@ -286,7 +286,37 @@ int MFNLIN003::PGMimageProcessor::extractComponents(unsigned char threshold, int
     }
     delete [] image;
     delete [] visited_comp;
-    return concomp_vector.size();
+    return MFNLIN003::PGMimageProcessor::concomp_vector.size();
 }
 
-int MFNLIN003::PGMimageProcessor::filterComponentsBySize(int minSize, int maxSize)){}
+bool MFNLIN003::PGMimageProcessor::checkValidRange(int minSize, int maxSize) {
+
+}
+
+/**
+ * @brief iterator with an iterator - though your container of connected
+components and filter out (remove) all the components which do not
+obey the size criteria pass as arguments. The number remaining
+after this operation should be returned.
+ * 
+ * @param minSize 
+ * @param maxSize 
+ * @return int 
+ */
+int MFNLIN003::PGMimageProcessor::filterComponentsBySize(int minSize, int maxSize){
+    
+    //remove > maxSize
+    MFNLIN003::PGMimageProcessor::concomp_vector.erase(std::remove_if(
+            MFNLIN003::PGMimageProcessor::concomp_vector.begin(),
+            MFNLIN003::PGMimageProcessor::concomp_vector.end(),
+            [](const auto &conncomp ){ return (conncomp.get().num_pixels>maxSize);})
+            ,MFNLIN003::PGMimageProcessor::concomp_vector.end());
+    
+    //remove <minSize
+     MFNLIN003::PGMimageProcessor::concomp_vector.erase(std::remove_if(
+            MFNLIN003::PGMimageProcessor::concomp_vector.begin(),
+            MFNLIN003::PGMimageProcessor::concomp_vector.end(),
+            [](const auto &conncomp ){ return (conncomp.get().num_pixels<minSize);})
+            ,MFNLIN003::PGMimageProcessor::concomp_vector.end());
+  
+}
