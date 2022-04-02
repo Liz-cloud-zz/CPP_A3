@@ -1,4 +1,5 @@
 #include "PGMimageProcessor.h"
+#include <bits/stdc++.h>
 
  //constructors
  /**
@@ -129,30 +130,65 @@ bool MFNLIN003::PGMimageProcessor::writeComponents(const std::string & outFileNa
 int MFNLIN003::PGMimageProcessor::extractComponents(unsigned char threshold, int minValidSize){
       std::cout<<"extract components"<<std::endl;
       unsigned char* image0=readFile();
-
+      size_t num_of_comp=0;//num of components
+      std::queue<std::pair<int,int>> temp_q;//stores connected components neighbours
+  
       //covert 1d array to 2d
       unsigned char ** image=new unsigned char *[MFNLIN003::PGMimageProcessor::rows];
       for(size_t i=0;i<MFNLIN003::PGMimageProcessor::rows;++i){
           image[i]=new unsigned char [MFNLIN003::PGMimageProcessor::columns];
-      }
+        }
+
     //populate array with 1D Array contents
-    int counter=0;
-    for(size_t y=0;y<MFNLIN003::PGMimageProcessor::rows;++y){
+      int counter=0;
+      for(size_t y=0;y<MFNLIN003::PGMimageProcessor::rows;++y){
         for(size_t x=0;x<MFNLIN003::PGMimageProcessor::columns;++x){
-            image[y][x]=image0[counter];
-            // std::cout<<image[x][y]<<std::endl;
-            counter++;
+              image[y][x]=image0[counter];
+                // std::cout<<image[x][y]<<std::endl;
+              counter++;
         }
+      }
+      delete[] image0;//clear memory
+
+       //make a corresponding 2d array that marks the points checked in the 2d image
+      bool visited_comp[MFNLIN003::PGMimageProcessor::columns][MFNLIN003::PGMimageProcessor::rows];
+      for(size_t y=0;y<MFNLIN003::PGMimageProcessor::rows;++y){
+           for(size_t x=0;x<MFNLIN003::PGMimageProcessor::columns;++x){
+              visited_comp[y][x]=false;
+            }
+        }
+
+        //Extract components
+        for(size_t y=0;y<MFNLIN003::PGMimageProcessor::rows;++y){
+            for(size_t x=0;x<MFNLIN003::PGMimageProcessor::columns;++x){
+                //check if current point is a fore ground pixel
+                float character =(float) image[x][y]; //convert char to number
+                if(visited_comp[x][y]==true){//check if char has been visited
+                    continue;//go to next point
+                }
+                if(character>minValidSize){//does it obey obey size criteria
+                    if (character>threshold)//foreground
+                    {
+                        // std::pair<int,int> point;
+                        // point.first=x;
+                        // point.second=y;
+                        // temp_q.push();
+                    }
+                    
+
+                }
+            }
+        }
+
+
+
+
+
+    //clear memory
+    for(size_t y=0;y<MFNLIN003::PGMimageProcessor::rows;++y){
+            delete [] image[y];
+            delete [] visited_comp[y];
     }
-    delete[] image0;
-
-    //Extract components
-    for(size_t y=0;y<MFNLIN003::PGMimageProcessor::rows;++y){
-        for(size_t x=0;x<MFNLIN003::PGMimageProcessor::columns;++x){
-            //check if current point is a fore ground pixel
-            
-        }
-        }
-
-  
+    delete [] image;
+    delete [] visited_comp;
 }
