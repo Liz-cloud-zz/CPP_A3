@@ -320,3 +320,49 @@ int MFNLIN003::PGMimageProcessor::filterComponentsBySize(int minSize, int maxSiz
             ,MFNLIN003::PGMimageProcessor::concomp_vector.end());
   
 }
+/**
+ * @brief return number of pixels in largest component
+ * 
+ * @return int 
+ */
+ int MFNLIN003::PGMimageProcessor::getLargestSize() const{
+     int max=0;
+    //Loop thru cointainer
+    for(const auto & container : MFNLIN003::PGMimageProcessor::concomp_vector){
+        auto conncomp=container.get();
+        if(conncomp->num_pixels>max){
+            max=conncomp->num_pixels;
+        }
+        
+    }
+    return max;
+
+}
+/**
+ * @brief return number of pixels in smallest component
+ * 
+ * @return int 
+ */
+int MFNLIN003::PGMimageProcessor::getSmallestSize() const{
+     int min=1000;
+    //Loop thru cointainer
+    for(const auto & container : MFNLIN003::PGMimageProcessor::concomp_vector){
+        auto conncomp=container.get();
+        if(conncomp->num_pixels<min){
+            min=conncomp->num_pixels;
+        }
+        
+    }
+    return min;
+}
+/**
+ * @brief print the data for a component to std::cout
+see ConnectedComponent class;
+print out to std::cout: component ID, number of pixels
+ * 
+ * @param theComponent 
+ */
+void MFNLIN003::PGMimageProcessor::printComponentData(const ConnectedComponent & theComponent)const{
+    std::cout<< "component ID: "<<theComponent.id<<"number of pixels: "<<theComponent.num_pixels<<std::endl;
+
+}
