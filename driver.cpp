@@ -39,19 +39,33 @@ int main(int argc , char *argv[]){
             //get the instruction and file name
             std::cout<<"print out all the component data:"<<std::endl;
             arguments+=1;
+
             int number_of_components=pgmiP.extractComponents(threshold,min_val);
+            std::cout<<"number of components before filtering: "<<number_of_components<<std::endl;
+            int new_comp_size=pgmiP.filterComponentsBySize(min_val,max_val);
+            std::cout<<"number of components after filtering: "<<new_comp_size<<std::endl;
+            std::cout<<"Smallest component size is : "<<pgmiP.getSmallestSize()<<std::endl;
+            std::cout<<"Largest component size is: "<<pgmiP.getLargestSize()<<std::endl;
+
             for(const auto & container : pgmiP.concomp_vector){
                 auto conncomp=container.get();
                 pgmiP.printComponentData(conncomp);
 
             }
-            }
+
+        }
         else if ((std::string(argv[arguments]))=="-w")
         {
             std::string out_filename;
             std::cout<<"write out all retained components in file {enter file name}"<<std::endl;
             std::cin>>out_filename;
             arguments+=1;
+
+            if(pgmiP.writeComponents(out_filename)){
+                std::cout<<"Writting success! :)"<<std::endl;
+
+            }
+            else{std::cout<<"Writting unsuccessful:("<<std::endl}
         }
         arguments++;
     }
