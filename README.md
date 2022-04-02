@@ -1,25 +1,31 @@
 # CSC3022F_A3
-Image processing with connected components
+#Image processing with connected components
 
 Folder contents:-> 2 header file(ConnectedComponent.h, PGMimageProcessor.h), 3 cpp files(driver.cpp, onnectedComponent.cpp, PGMimageProcessor.cpp), 1 Makefile, examples folder,git folder
 
-Problem statement:->    The user supplies the pgm file to be  munipulated , options [-t, -s, -w ] ,extraction points (start & end coordinates) , frame dimensions, output file name (to display pgm frame manipulated), munipulation option [none, invert,reverse, revinvert]. The program will extract frames of size dimensions from extration points range and manipulate them based on given options and store the result pgm frame image in output file name suplied.
+Problem statement:->    The user supplies options [-t, -s, -w -p] and the pgm file to be  munipulated. The program will read the file based on input.From pgm image connected contents are extracted when a foreground pixels is encountered during the search and either dispayed to screen with their details or stored to output pgm file based on user options
 
-framesequence.h:-> This is the header file for our reading and parsing methods(which
-            are defined in framesequence.cpp), FrameSequence class , destructors & constructors defined
+ConnectedComponent.h:-> This is the header file for our reading and parsing methods, parameters(which
+            are defined in ConnectedComponents.cpp), ConnectedComponent class , destructors & constructors defined
 
-methods.cpp:-> This contains the definition of our methods, destructors and constructors. These methods will be used in the
-               driver.cpp file
+ConnectedComponent.cpp:-> This contains the definition of our parameters, destructors and constructors. These methods will be used in the
+               PGMimageProcessor file when a COnnectedComponent object is made
 
-driver.cpp:-> Contains the main method and prompts user to enter the pgm file to be  munipulated , options [-t, -s, -w ], extraction points (start & end coordinates) , frame diamensions, output file name (to display pgm frame manipulated), munipulation option [none, invert,reverse, revinvert].
-	    Munipulation options:
-		  * "none"-> no modification
-		  * "invert"-> invert frames
-		  * "reverse"-> reverse frames
-		  * "revinvert"-> reverse and invert frames
-		  * else option is invalid
-Makefile:-> compiles framesequence.cpp and driver.cpp into object files then proceeds
-           link them to create an executable file called "extractor.exe"
+PGMimageProcessor.h:-> This is the header file for our reading and parsing methods, parameters(which
+            are defined in PGMimageProcessor.cpp), PGMimageProcessor class , destructors & constructors defined
+
+PGMimageProcessor.cpp:-> This contains the definition of our parameters, destructors and constructors. These methods will be used in the
+               driver file
+
+
+driver.cpp:-> Contains the main method and prompts user to enter the pgm file to be  munipulated , options [-t, -s, -w, -p ]
+	    options:
+		  * "-t"-> set threshold for component detection
+		  * "-s"-> set minimum and maximum valid component size
+		  * "-w"-> write output all reatined componets
+		  * "-p"-> print out all the component data (entries do not have to be sorted) as well 				   as the total component number and the sizes of the smallest and largest 				   components
+Makefile:-> compiles ConnectedComponent.cpp PGMimageProcessor.cpp and driver.cpp into object files then proceeds
+           link them to create an executable file called "findcomp.exe"
 
 Examples(folder):-> contains example pgm files that can be used to
                    test program.
@@ -28,7 +34,7 @@ git:-> contains git repository of project.
 
 
 Testing:-> type "make" in command line to generate executable file and object files
-	        type "make run" in command line, to test the extraction and munipulation of the sloan_image.pgm from point(0,10) to (1000,1000) frames of size 300x200 then print out inverted frames and frames not modified
-            type "make clean" in commandline , to delete the object files, pgm frame images and executable file
+	        type "make run" in command line, to test the extraction and munipulation of the chess.pgm print out modified image and details of each connected component
+            type "make clean" in commandline , to delete the object files, pgm out images and executable file
 
 Conclusion:-> 
