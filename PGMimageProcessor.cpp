@@ -276,7 +276,10 @@ int MFNLIN003::PGMimageProcessor::extractComponents(unsigned char threshold, int
                 }
                 visited_comp[x][y]=true;
                 image[y][x]=(unsigned char )0;
+                // template<typename T>
+
                 concomp_vector.push_back(std::make_unique<MFNLIN003::ConnectedComponent>(cc));//add connected commponent object to vector container
+                
             }
         }
     //clear memory
@@ -315,7 +318,8 @@ int MFNLIN003::PGMimageProcessor::filterComponentsBySize(int minSize, int maxSiz
             MFNLIN003::PGMimageProcessor::concomp_vector.end(),
             [](const auto &conncomp ){ return (conncomp.get().num_pixels<minSize);})
             ,MFNLIN003::PGMimageProcessor::concomp_vector.end());
-  
+            
+  return MFNLIN003::PGMimageProcessor::concomp_vector.size();
 }
 /**
  * @brief return number of pixels in largest component
