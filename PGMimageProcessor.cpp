@@ -131,7 +131,6 @@ bool MFNLIN003::PGMimageProcessor::writeComponents(const std::string & outFileNa
         ofstream<<std::endl;
     }
     ofstream.close();
-    //clear 1D array
  
     //check if file not empty:
     std::ifstream infile(outFileName, std::ios::binary);
@@ -289,3 +288,5 @@ int MFNLIN003::PGMimageProcessor::extractComponents(unsigned char threshold, int
     delete [] visited_comp;
     return concomp_vector.size();
 }
+
+int MFNLIN003::PGMimageProcessor::filterComponentsBySize(int minSize, int maxSize)){}
