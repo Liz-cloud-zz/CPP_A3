@@ -107,12 +107,32 @@ unsigned char * MFNLIN003::PGMimageProcessor::readFile(){
 bool MFNLIN003::PGMimageProcessor::writeComponents(const std::string & outFileName){
     std::cout<<"output connected components image"<<std::endl;
     std::ofstream ofstream;
-    unsigned char* image0=readFile();
-    //write to outfile
-    ofstream.write(reinterpret_cast< char *>(image0),(MFNLIN003::PGMimageProcessor::columns*MFNLIN003::PGMimageProcessor::rows)*sizeof(unsigned char));
+    int image[MFNLIN003::PGMimageProcessor::rows][MFNLIN003::PGMimageProcessor::columns]={0};//initialise it zero
+        //Loop thru cointainer and write 255 as pixel and coordinate
+    for(const auto & container : concomp_vector){
+        auto conncomp=container.get();
+        for(const auto & point :conncomp->coordinates ){
+            image[point.first][point.second]=255;
+        }
+    }
+
+    //write the first 4 lines
+    ofstream.open(outFileName.c_str(),std::ios::out | std::ios::binary);
+    ofstream <<MFNLIN003::PGMimageProcessor::version<<std::endl;
+    ofstream <<MFNLIN003::PGMimageProcessor::comment<<std::endl;
+    ofstream <<MFNLIN003::PGMimageProcessor::columns <<" "<<MFNLIN003::PGMimageProcessor::rows<<std::endl;
+    ofstream <<MFNLIN003::PGMimageProcessor::max <<std::endl;
+
+    //loop thru 2d image and write to pixels to image
+    for(int i=0;i<MFNLIN003::PGMimageProcessor::rows;++i){
+        for(int j=0;j<MFNLIN003::PGMimageProcessor::columns;++j){
+            ofstream<<image[i][j];
+        }
+        ofstream<<std::endl;
+    }
     ofstream.close();
     //clear 1D array
-    delete [] image0;
+ 
     //check if file not empty:
     std::ifstream infile(outFileName, std::ios::binary);
     if (infile.peek() == std::ifstream::traits_type::eof() )
@@ -121,17 +141,39 @@ bool MFNLIN003::PGMimageProcessor::writeComponents(const std::string & outFileNa
 
     }
     return true;
+}  
 
-    // std::cout<<i<<std::endl;
-    //}
-    //   std::cout<<"done"<<std::endl;
-}    
+/**
+ * @brief check if the charcter follows the size creteria and if it is a foreground pixel
+ * 
+ * @param character 
+ * @param threshold 
+ * @param minValidSize 
+ * @return true 
+ * @return false 
+ */
+bool MFNLIN003::PGMimageProcessor::checkForeGround(unsigned char character,unsigned char threshold, int minValidSize){
+       std::queue<std::pair<int,int>> temp_q;//stores connected components neighbours
+    //does the charcter follow the size creteria and is it a foreground pixel
+    return ((float)character>minValidSize)&&(character>threshold);
 
+}
+
+/**
+ * @brief iterate - with an iterator - though your container of connected
+          components and filter out (remove) all the components which do not
+          obey the size criteria pass as arguments. The number remaining
+          after this operation should be returned.
+ * 
+ * @param threshold 
+ * @param minValidSize 
+ * @return int 
+ */
 int MFNLIN003::PGMimageProcessor::extractComponents(unsigned char threshold, int minValidSize){
       std::cout<<"extract components"<<std::endl;
       unsigned char* image0=readFile();
       size_t num_of_comp=0;//num of components
-      std::queue<std::pair<int,int>> temp_q;//stores connected components neighbours
+
   
       //covert 1d array to 2d
       unsigned char ** image=new unsigned char *[MFNLIN003::PGMimageProcessor::rows];
@@ -156,34 +198,88 @@ int MFNLIN003::PGMimageProcessor::extractComponents(unsigned char threshold, int
            for(size_t x=0;x<MFNLIN003::PGMimageProcessor::columns;++x){
               visited_comp[y][x]=false;
             }
-        }
-
+          
+      }
         //Extract components
+        int id=0;//unique id for component
+         //pushing it’s non-tested N/S/E/W neighbour
+        //coordinates onto a queue (initially empty)
+        std::queue<std::pair<int,int>>temp_q;
+        //make a connected component
+        MFNLIN003::ConnectedComponent cc(id,1);
+
         for(size_t y=0;y<MFNLIN003::PGMimageProcessor::rows;++y){
             for(size_t x=0;x<MFNLIN003::PGMimageProcessor::columns;++x){
-                //check if current point is a fore ground pixel
-                float character =(float) image[x][y]; //convert char to number
-                if(visited_comp[x][y]==true){//check if char has been visited
+                std::pair<int, int>pair=std::make_pair(y,x);
+                if((float)image[y][x]==0 || (visited_comp[y][x]==true)){//check if char has been visited
                     continue;//go to next point
                 }
-                if(character>minValidSize){//does it obey obey size criteria
-                    if (character>threshold)//foreground
-                    {
-                        // std::pair<int,int> point;
-                        // point.first=x;
-                        // point.second=y;
-                        // temp_q.push();
-                    }
-                    
 
+                if(MFNLIN003::PGMimageProcessor::checkForeGround(image[y][x],threshold,minValidSize)){//check if point is foreground
+                    cc.coordinates.push_back(std::make_pair(y,x));
+                    for(size_t i=y-1;i<y+2;++i){
+                        for(size_t j=x-1;j<x+2;++j){
+                            //check for index out of bounds errors:
+                            if(i>MFNLIN003::PGMimageProcessor::rows-1 || i<0){
+                                continue;
+                            }
+                            if(j>MFNLIN003::PGMimageProcessor::columns ||j<0){
+                                continue;
+                            }
+
+                            if((float)image[i][j]==255){//check if neighbour is 255
+                                if(visited_comp[i][j]){//check if neighbour not yet processed
+                                    continue;
+                                }
+                                else{
+                                    //add neighbour to connected component
+                                    cc.num_pixels++;
+                                    cc.coordinates.push_back(std::make_pair(i,i));
+
+                                    for(size_t y_c=i-1;y_c<i+2;++y_c){
+                                        for(size_t x_c=j-1;x_c<j+2;++x_c){
+                                            //check for index out of bounds errors:
+                                            if(y_c>MFNLIN003::PGMimageProcessor::rows-1 || y_c<0){
+                                                continue;
+                                            }
+                                            if(x_c >MFNLIN003::PGMimageProcessor::columns |x_c<0){
+                                                continue;
+                                            }
+                                            temp_q.push(std::make_pair(y_c,x_c));
+                                        }
+                                    }
+                                    //set the current foreground pixel added to your component to 0 in the thresholded image
+                                    visited_comp[i][j]=true;
+                                    image[i][j]=0;
+
+                                    //popping off candidate pixel coordinates from the queue,
+                                    //and expanding/testing those, until the queue has been exhausted
+                                    while (!temp_q.empty())
+                                    {
+                                        std::pair<int,int>p=temp_q.front();
+                                        if((float)image[p.first][p.second]==255){//check if neighbour is 255
+                                            if(visited_comp[p.first][p.second]){//check if neighbour not yet processed
+                                                continue;
+                                            }
+                                            else{
+                                                //add neighbour to connected component
+                                                cc.num_pixels++;
+                                                cc.coordinates.push_back(p);
+                                            }    
+                                        }
+                                        temp_q.pop();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    id++;
                 }
+                visited_comp[x][y]=true;
+                image[y][x]=0;
+                concomp_vector.push_back(std::make_unique<MFNLIN003::ConnectedComponent>(cc));//add connected commponent object to vector container
             }
         }
-
-
-
-
-
     //clear memory
     for(size_t y=0;y<MFNLIN003::PGMimageProcessor::rows;++y){
             delete [] image[y];
@@ -191,4 +287,5 @@ int MFNLIN003::PGMimageProcessor::extractComponents(unsigned char threshold, int
     }
     delete [] image;
     delete [] visited_comp;
+    return concomp_vector.size();
 }
