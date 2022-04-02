@@ -275,7 +275,7 @@ int MFNLIN003::PGMimageProcessor::extractComponents(unsigned char threshold, int
                     id++;
                 }
                 visited_comp[x][y]=true;
-                image[y][x]=0;
+                image[y][x]=(unsigned char )0;
                 concomp_vector.push_back(std::make_unique<MFNLIN003::ConnectedComponent>(cc));//add connected commponent object to vector container
             }
         }
@@ -289,9 +289,6 @@ int MFNLIN003::PGMimageProcessor::extractComponents(unsigned char threshold, int
     return MFNLIN003::PGMimageProcessor::concomp_vector.size();
 }
 
-bool MFNLIN003::PGMimageProcessor::checkValidRange(int minSize, int maxSize) {
-
-}
 
 /**
  * @brief iterator with an iterator - though your container of connected
@@ -363,6 +360,6 @@ print out to std::cout: component ID, number of pixels
  * @param theComponent 
  */
 void MFNLIN003::PGMimageProcessor::printComponentData(const ConnectedComponent & theComponent)const{
-    std::cout<< "component ID: "<<theComponent.id<<"number of pixels: "<<theComponent.num_pixels<<std::endl;
+    std::cout<< "Component ID: "<<theComponent.id<<"Number of pixels: "<<theComponent.num_pixels<<std::endl;
 
 }
