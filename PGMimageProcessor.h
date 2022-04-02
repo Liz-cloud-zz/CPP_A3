@@ -30,9 +30,7 @@ namespace MFNLIN003{
         bool writeComponents(const std::string & outFileName);//write data to file
         bool checkForeGround(unsigned char character, unsigned char threshold, int minValidSize);//check if point is a foreground
         int extractComponents(unsigned char threshold, int minValidSize);//extract cconnected commponents
-     
         int filterComponentsBySize(int minSize, int maxSize);//contains current components
-       
         int getLargestSize(void) const;// return number of pixels in largest component
         int getSmallestSize(void) const;// return number of pixels in smallest component
         void printComponentData(const ConnectedComponent & theComponent) const;//print the data for a component
