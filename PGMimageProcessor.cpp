@@ -252,6 +252,7 @@ bool MFNLIN003::PGMimageProcessor::checkForeGround(unsigned char character,unsig
 int MFNLIN003::PGMimageProcessor::extractComponents(unsigned char threshold, int minValidSize){
       std::cout<<"extract components"<<std::endl;
       unsigned char* image0=readFile();
+      std::cout <<"read file"<<std::endl;
       size_t num_of_comp=0;//num of components
 
   
@@ -259,7 +260,8 @@ int MFNLIN003::PGMimageProcessor::extractComponents(unsigned char threshold, int
       unsigned char ** image=new unsigned char *[MFNLIN003::PGMimageProcessor::rows];
       for(size_t i=0;i<MFNLIN003::PGMimageProcessor::rows;++i){
           image[i]=new unsigned char [MFNLIN003::PGMimageProcessor::columns];
-        }
+     }
+    std::cout <<"Convert 1d to 2d"<<std::endl;
 
     //populate array with 1D Array contents
       int counter=0;
@@ -271,23 +273,23 @@ int MFNLIN003::PGMimageProcessor::extractComponents(unsigned char threshold, int
         }
       }
       delete[] image0;//clear memory
-
-       //make a corresponding 2d array that marks the points checked in the 2d image
-      bool visited_comp[MFNLIN003::PGMimageProcessor::columns][MFNLIN003::PGMimageProcessor::rows];
-      for(size_t y=0;y<MFNLIN003::PGMimageProcessor::rows;++y){
-           for(size_t x=0;x<MFNLIN003::PGMimageProcessor::columns;++x){
-              visited_comp[y][x]=false;
-            }
-          
-      }
+      std::cout <<"done populating array"<<std::endl;
+    //make a corresponding 2d array that marks the points checked in the 2d image
+      bool visited_comp[MFNLIN003::PGMimageProcessor::rows][MFNLIN003::PGMimageProcessor::columns]={{false}};
+    //    //make a corresponding 2d array that marks the points checked in the 2d image
+    //   bool visited_comp[MFNLIN003::PGMimageProcessor::columns][MFNLIN003::PGMimageProcessor::rows];
+    //   for(size_t y=0;y<MFNLIN003::PGMimageProcessor::rows;++y){
+    //        for(size_t x=0;x<MFNLIN003::PGMimageProcessor::columns;++x){
+    //           visited_comp[y][x]=false;
+    //         }  
+    //   }
+      std::cout <<"Created corresponding bool 2d array"<<std::endl;
         //Extract components
         int id=0;//unique id for component
-         //pushing it’s non-tested N/S/E/W neighbour
+
+         //push it’s non-tested N/S/E/W neighbour
         //coordinates onto a queue (initially empty)
         std::queue<std::pair<int,int>>temp_q;
-        //make a connected component
-        MFNLIN003::ConnectedComponent cc(id,1);
-
         for(size_t y=0;y<MFNLIN003::PGMimageProcessor::rows;++y){
             for(size_t x=0;x<MFNLIN003::PGMimageProcessor::columns;++x){
                 std::pair<int, int>pair=std::make_pair(y,x);
@@ -296,6 +298,8 @@ int MFNLIN003::PGMimageProcessor::extractComponents(unsigned char threshold, int
                 }
 
                 if(MFNLIN003::PGMimageProcessor::checkForeGround(image[y][x],threshold,minValidSize)){//check if point is foreground
+                     //make a connected component
+                     MFNLIN003::ConnectedComponent cc(id,1);
                     cc.coordinates.push_back(std::make_pair(y,x));
                     for(size_t i=y-1;i<y+2;++i){
                         for(size_t j=x-1;j<x+2;++j){
@@ -353,13 +357,14 @@ int MFNLIN003::PGMimageProcessor::extractComponents(unsigned char threshold, int
                             }
                         }
                     }
+                    MFNLIN003::PGMimageProcessor::concomp_vector.push_back(cc);
                     id++;
                 }
                 visited_comp[y][x]=true;
                 image[y][x]=(unsigned char )0;
                 // std::unique_ptr<MFNLIN003::ConnectedComponent> up=std::make_unique<MFNLIN003::ConnectedComponent>(cc);
                 // concomp_vector.push_back(up);//add connected commponent object to vector container  
-                MFNLIN003::PGMimageProcessor::concomp_vector.push_back(cc);
+                
             }
         }
     //clear memory
