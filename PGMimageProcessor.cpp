@@ -7,7 +7,6 @@
 #include <iomanip>
 #include <utility>
 #include <memory>
-#include "ConnectedComponent.h"
 #include "PGMimageProcessor.h"
 #include <bits/stdc++.h>
 
@@ -38,7 +37,7 @@ MFNLIN003::PGMimageProcessor::PGMimageProcessor(std::string fil_n){
  */
 MFNLIN003::PGMimageProcessor::~PGMimageProcessor(){
 
-    std::cout << "Destructor for PGMiP"<<std::endl;
+    // std::cout << "Destructor for PGMiP"<<std::endl;
     if(!this->concomp_vector.empty() ){//check if it is empty
         MFNLIN003::PGMimageProcessor::concomp_vector.clear();
 
@@ -51,7 +50,7 @@ MFNLIN003::PGMimageProcessor::~PGMimageProcessor(){
  * @param pgmip 
  */
 MFNLIN003::PGMimageProcessor::PGMimageProcessor(const PGMimageProcessor & pgmip){
-      std::cout << "Copy Constructor for PGMiP"<<std::endl;
+    //   std::cout << "Copy Constructor for PGMiP"<<std::endl;
       this->columns=pgmip.columns;
       this->rows=pgmip.rows;
       this->comment=pgmip.comment;
@@ -71,7 +70,7 @@ MFNLIN003::PGMimageProcessor::PGMimageProcessor(const PGMimageProcessor & pgmip)
  * @param pgmip 
  */
 MFNLIN003::PGMimageProcessor::PGMimageProcessor(PGMimageProcessor && pgmip){
-      std::cout << "Move Constructor for PGMiP"<<std::endl;
+    //   std::cout << "Move Constructor for PGMiP"<<std::endl;
       //if(this!= & pgmip){//checks to make sure that we are not doing self assignment 
         this->columns=pgmip.columns;
         this->rows=pgmip.rows;
@@ -88,7 +87,7 @@ MFNLIN003::PGMimageProcessor::PGMimageProcessor(PGMimageProcessor && pgmip){
  * @return MFNLIN003::PGMimageProcessor& 
  */
 MFNLIN003::PGMimageProcessor& MFNLIN003::PGMimageProcessor::operator=(const MFNLIN003::PGMimageProcessor & pgmip){
-      std::cout << "Copy assignment PGMiP"<<std::endl;
+    //   std::cout << "Copy assignment PGMiP"<<std::endl;
       if(this!= & pgmip){//checks to make sure that we are not doing self assignment 
         this->columns=pgmip.columns;
         this->rows=pgmip.rows;
@@ -110,7 +109,7 @@ MFNLIN003::PGMimageProcessor& MFNLIN003::PGMimageProcessor::operator=(const MFNL
 }
 
 MFNLIN003::PGMimageProcessor& MFNLIN003::PGMimageProcessor::operator=( MFNLIN003::PGMimageProcessor && pgmip){
-      std::cout << "MOve assignment PGMiP"<<std::endl;
+    //   std::cout << "Move assignment PGMiP"<<std::endl;
       if(this!= & pgmip){//checks to make sure that we are not doing self assignment 
         this->columns=pgmip.columns;
         this->rows=pgmip.rows;
@@ -189,8 +188,11 @@ bool MFNLIN003::PGMimageProcessor::writeComponents(const std::string & outFileNa
     int image[MFNLIN003::PGMimageProcessor::rows][MFNLIN003::PGMimageProcessor::columns]={0};//initialise it zero
         //Loop thru cointainer and write 255 as pixel and coordinate
     for(const auto & container : MFNLIN003::PGMimageProcessor::concomp_vector){
-        auto conncomp=container.get();
-        for(const auto & point :conncomp->coordinates ){
+        // auto conncomp=container.get();
+        // for(const auto & point :conncomp->coordinates ){
+        //     image[point.first][point.second]=255;
+        // }
+           for(const auto & point :container.coordinates){
             image[point.first][point.second]=255;
         }
     }
@@ -289,7 +291,7 @@ int MFNLIN003::PGMimageProcessor::extractComponents(unsigned char threshold, int
         for(size_t y=0;y<MFNLIN003::PGMimageProcessor::rows;++y){
             for(size_t x=0;x<MFNLIN003::PGMimageProcessor::columns;++x){
                 std::pair<int, int>pair=std::make_pair(y,x);
-                if((float)image[y][x]==0 || (visited_comp[y][x]==true)){//check if char has been visited
+                if((float)image[y][x]==0 || (visited_comp[y][x])){//check if char has been visited
                     continue;//go to next point
                 }
 
@@ -353,86 +355,112 @@ int MFNLIN003::PGMimageProcessor::extractComponents(unsigned char threshold, int
                     }
                     id++;
                 }
-                visited_comp[x][y]=true;
+                visited_comp[y][x]=true;
                 image[y][x]=(unsigned char )0;
-                std::unique_ptr<MFNLIN003::ConnectedComponent> up=std::make_unique<MFNLIN003::ConnectedComponent>(cc);
-                concomp_vector.push_back(up);//add connected commponent object to vector container  
+                // std::unique_ptr<MFNLIN003::ConnectedComponent> up=std::make_unique<MFNLIN003::ConnectedComponent>(cc);
+                // concomp_vector.push_back(up);//add connected commponent object to vector container  
+                MFNLIN003::PGMimageProcessor::concomp_vector.push_back(cc);
             }
         }
     //clear memory
     for(size_t y=0;y<MFNLIN003::PGMimageProcessor::rows;++y){
             delete [] image[y];
-            //delete [] visited_comp[y];
+            // delete [] visited_comp[y];
     }
     delete [] image;
-    //delete [] visited_comp;
+    // delete [] visited_comp;
     return MFNLIN003::PGMimageProcessor::concomp_vector.size();
 }
 
 
-/**
- * @brief iterator with an iterator - though your container of connected
-components and filter out (remove) all the components which do not
-obey the size criteria pass as arguments. The number remaining
-after this operation should be returned.
- * 
- * @param minSize 
- * @param maxSize 
- * @return int 
- */
-int MFNLIN003::PGMimageProcessor::filterComponentsBySize(int minSize, int maxSize){
-        for(int i=0 ;i<MFNLIN003::PGMimageProcessor::concomp_vector.size();++i){
-            auto conncomp=MFNLIN003::PGMimageProcessor::concomp_vector[i].get();
-            size_t num_pix=conncomp->num_pixels;
-            if(num_pix<minSize || num_pix>maxSize){
-                MFNLIN003::PGMimageProcessor::concomp_vector.erase(concomp_vector.begin()+i);
-            }
-        }
+// /**
+//  * @brief iterator with an iterator - though your container of connected
+// components and filter out (remove) all the components which do not
+// obey the size criteria pass as arguments. The number remaining
+// after this operation should be returned.
+//  * 
+//  * @param minSize 
+//  * @param maxSize 
+//  * @return int 
+//  */
+// int MFNLIN003::PGMimageProcessor::filterComponentsBySize(int minSize, int maxSize){
+//         // for(int i=0 ;i<MFNLIN003::PGMimageProcessor::concomp_vector.size();++i){
+//         //     auto conncomp=MFNLIN003::PGMimageProcessor::concomp_vector[i].get();
+//         //     size_t num_pix=conncomp->num_pixels;
+//         //     if(num_pix<minSize || num_pix>maxSize){
+//         //         MFNLIN003::PGMimageProcessor::concomp_vector.erase(concomp_vector.begin()+i);
+//         //     }
+//         // }
+//             for(int i=0 ;i<MFNLIN003::PGMimageProcessor::concomp_vector.size();++i){
+//                 auto conncomp=MFNLIN003::PGMimageProcessor::concomp_vector[i];
+//                 size_t num_pix=conncomp.num_pixels;
+//                 if(num_pix<minSize || num_pix>maxSize){
+//                     MFNLIN003::PGMimageProcessor::concomp_vector.erase(concomp_vector.begin()+i);
+//                 }
+//             }
+                
             
-  return MFNLIN003::PGMimageProcessor::concomp_vector.size();
-}
+//   return MFNLIN003::PGMimageProcessor::concomp_vector.size();
+// }
 
-/**
- * @brief return number of pixels in largest component
- * 
- * @return int 
- */
- int MFNLIN003::PGMimageProcessor::getLargestSize() const{
-     int max=0;
-    //Loop thru cointainer
-    for(const auto & container : MFNLIN003::PGMimageProcessor::concomp_vector){
-        auto conncomp=container.get();
-        if(conncomp->num_pixels>max){
-            max=conncomp->num_pixels;
-        }
-    }
-    return max;
-}
-/**
- * @brief return number of pixels in smallest component
- * 
- * @return int  
- */
-int MFNLIN003::PGMimageProcessor::getSmallestSize() const{
-     int min=1000;
-    //Loop thru cointainer
-    for(const auto & container : MFNLIN003::PGMimageProcessor::concomp_vector){
-        auto conncomp=container.get();
-        if(conncomp->num_pixels<min){
-            min=conncomp->num_pixels;
-        }
-    }
-    return min;
-}
+// /**
+//  * @brief return number of pixels in largest component
+//  * 
+//  * @return int 
+//  */
+//  int MFNLIN003::PGMimageProcessor::getLargestSize() const{
+//      int max=0;
+//     //Loop thru cointainer
+//     // for(const auto & container : MFNLIN003::PGMimageProcessor::concomp_vector){
+//     //     auto conncomp=container.get();
+//     //     if(conncomp->num_pixels>max){
+//     //         max=conncomp->num_pixels;
+//     //     }
+//     // }
 
-/**
- * @brief print the data for a component to std::cout
-see ConnectedComponent class;
-print out to std::cout: component ID, number of pixels
- * 
- * @param theComponent 
- */
-void MFNLIN003::PGMimageProcessor::printComponentData(const MFNLIN003::ConnectedComponent & theComponent)const{
-    std::cout<< "Component ID: "<<theComponent.id<<"Number of pixels: "<<theComponent.num_pixels<<std::endl;
+//     for(const auto & container : MFNLIN003::PGMimageProcessor::concomp_vector){
+//         auto conncomp=container;
+//         if(conncomp.num_pixels>max){
+//             max=conncomp.num_pixels;
+//         }
+// }
+//     return max;
+// }
+// /**
+//  * @brief return number of pixels in smallest component
+//  * 
+//  * @return int  
+//  */
+// int MFNLIN003::PGMimageProcessor::getSmallestSize() const{
+//      int min=1000;
+//     //Loop thru cointainer
+//     // for(const auto & container : MFNLIN003::PGMimageProcessor::concomp_vector){
+//     //     auto conncomp=container.get();
+//     //     if(conncomp->num_pixels<min){
+//     //         min=conncomp->num_pixels;
+//     //     }
+//     // }
+//     for(const auto & container : MFNLIN003::PGMimageProcessor::concomp_vector){
+//         auto conncomp=container;
+//         if(conncomp.num_pixels<min){
+//             min=conncomp.num_pixels;
+//         }
+//     }
+//     return min;
+// }
 
-}
+// /**
+//  * @brief print the data for a component to std::cout
+// see ConnectedComponent class;
+// print out to std::cout: component ID, number of pixels
+//  * 
+//  * @param theComponent 
+//  */
+// void MFNLIN003::PGMimageProcessor::printComponentData(const MFNLIN003::ConnectedComponent & theComponent)const{
+//     std::cout<< "Component ID: "<<theComponent.id<<"Number of pixels: "<<theComponent.num_pixels<<std::endl;
+
+// }
+
+// std::vector<MFNLIN003::ConnectedComponent> &MFNLIN003::PGMimageProcessor::getVector(){
+//     return this->concomp_vector;
+// }
