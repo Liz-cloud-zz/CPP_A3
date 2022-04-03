@@ -25,8 +25,5 @@ namespace MFNLIN003
             ConnectedComponent(const ConnectedComponent & cc);
             //Move Constructor
             ConnectedComponent(ConnectedComponent && cc);
-
-
-
     };
 }
