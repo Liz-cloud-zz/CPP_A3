@@ -1,14 +1,27 @@
+#define CATCH_CONFIG_MAIN  // This tells catch to provide a main() function. Only do this in one cpp file
+#include "catch.hpp"
 #include "PGMimageProcessor.h"
+#include "ConnectedComponent.h"
 #include <string>
+#include <iostream>
+#include <string>
+#include <vector>
+#include <fstream>
+#include <sstream>
+#include <algorithm>
+#include <iomanip>
+#include <memory>
+#include <utility>
+
 
 int main(){
     MFNLIN003::PGMimageProcessor pgmiP("/home/linda/Desktop/C++/A3/examples/chess.pgm");
     int number_of_components=pgmiP.extractComponents(128,3);
     std::cout<<"number of components before filtering: "<<number_of_components<<std::endl;
-    int new_comp_size=pgmiP.filterComponentsBySize(3,pgmiP.columns*pgmiP.rows);
-    std::cout<<"number of components after filtering: "<<new_comp_size<<std::endl;
-    std::cout<<"Smallest component size is : "<<pgmiP.getSmallestSize()<<std::endl;
-    std::cout<<"Largest component size is: "<<pgmiP.getLargestSize()<<std::endl;
+    // int new_comp_size=pgmiP.filterComponentsBySize(3,pgmiP.columns*pgmiP.rows);
+    // std::cout<<"number of components after filtering: "<<new_comp_size<<std::endl;
+    // std::cout<<"Smallest component size is : "<<pgmiP.getSmallestSize()<<std::endl;
+    // std::cout<<"Largest component size is: "<<pgmiP.getLargestSize()<<std::endl;
 
  
 }
@@ -73,3 +86,45 @@ int main(){
 //     }
 //  return 0;
 // }
+
+TEST_CASE("PGMimageProcessor class"){
+    SECTION("Default Constructor"){
+        MFNLIN003::PGMimageProcessor pgmiP;
+        REQUIRE(pgmiP.filename==nullptr);
+        // REQUIRE(pgmiP.checkForeGround()==false);
+        // REQUIRE(pgmiP.extractComponents()==0);
+        // REQUIRE(pgmiP.filterComponentsBySize()==0);
+        // REQUIRE(pgmiP.getLargestSize()==0);
+        // REQUIRE(pgmiP.getSmallestSize()==0);
+        // REQUIRE(pgmiP.writeComponents()==false);
+    }
+    SECTION("Custom Constructor"){
+        MFNLIN003::PGMimageProcessor pgmiP("~/examples/chess.pgm");
+        REQUIRE(pgmiP.filename=="~/examples/chess.pgm");
+
+        // REQUIRE(pgmiP.checkForeGround()==true);
+        // REQUIRE(pgmiP.extractComponents()!=0);
+        // REQUIRE(pgmiP.filterComponentsBySize()!=0);
+        // REQUIRE(pgmiP.getLargestSize()!=0);
+        // REQUIRE(pgmiP.getSmallestSize()!=0);
+        // REQUIRE(pgmiP.writeComponents()==true);
+    }
+
+    SECTION("Copy Constructor"){
+        MFNLIN003::PGMimageProcessor pgmiP("~/examples/chess.pgm");
+        MFNLIN003::PGMimageProcessor pgmiP2(pgmiP);
+
+        REQUIRE(pgmiP.filename==pgmiP2.filename);
+    }
+    SECTION("MOve Constructor"){
+        MFNLIN003::PGMimageProcessor pgmiP("~/examples/chess.pgm");
+        MFNLIN003::PGMimageProcessor pgmiP2(std::move(pgmiP));
+
+        REQUIRE(pgmiP.filename==pgmiP2.filename);
+    
+    }
+
+    
+
+    
+}

@@ -1,3 +1,11 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <fstream>
+#include <sstream>
+#include <algorithm>
+#include <iomanip>
+#include <utility>
 #include "ConnectedComponent.h"
 
 //constuctors:

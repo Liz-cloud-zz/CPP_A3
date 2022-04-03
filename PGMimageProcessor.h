@@ -1,3 +1,11 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <fstream>
+#include <sstream>
+#include <algorithm>
+#include <iomanip>
+#include <utility>
 #include <memory>
 #include "ConnectedComponent.h"
 
@@ -15,15 +23,19 @@ namespace MFNLIN003{
             int rows; //width of image
             int columns;// height of image
             int max;// maximum intensity in image
-            std::string comment ="";//image comment
+            std::string comment;//image comment
             std::string version;//image version
             std::string filename;//name of file
 
             //constructors
+            PGMimageProcessor(void);//default constructor
             PGMimageProcessor(std::string inputfile);//constructor
             ~PGMimageProcessor();//destructor
             PGMimageProcessor(const PGMimageProcessor & pgmip);//copy constructor
             PGMimageProcessor(PGMimageProcessor && pgmip);//move constructor
+            PGMimageProcessor & operator=(const PGMimageProcessor & rhs);//copy assignment
+            PGMimageProcessor & operator=(PGMimageProcessor && rhs);//move Assignment operator
+
 
 
         unsigned char *readFile();//read file contents from file

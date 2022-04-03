@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <iomanip>
 #include <utility>
+#include <memory>
 
 namespace MFNLIN003
 {
@@ -20,7 +21,7 @@ namespace MFNLIN003
             ConnectedComponent(int id, int num_pixels);
             //destructor
             ~ConnectedComponent();
-            //Copy COnstructor
+            //Copy Constructor
             ConnectedComponent(const ConnectedComponent & cc);
             //Move Constructor
             ConnectedComponent(ConnectedComponent && cc);
