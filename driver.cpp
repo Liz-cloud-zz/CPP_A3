@@ -15,8 +15,13 @@ int main(){
     MFNLIN003::PGMimageProcessor pgmiP("/home/linda/Desktop/C++/A3/examples/chess.pgm");
     int number_of_components=pgmiP.extractComponents(128,3);
     std::cout<<"number of components before filtering: "<<number_of_components<<std::endl;
-    // int new_comp_size=pgmiP.filterComponentsBySize(3,pgmiP.columns*pgmiP.rows);
-    // std::cout<<"number of components after filtering: "<<new_comp_size<<std::endl;
+    if(pgmiP.writeComponents("/home/linda/Desktop/C++/A3/out.pgm")){
+        std::cout<<"Writting success! :)"<<std::endl;
+
+    }
+    else{std::cout<<"Writting unsuccessful:("<<std::endl;}
+    int new_comp_size=pgmiP.filterComponentsBySize(3,pgmiP.columns*pgmiP.rows);
+    std::cout<<"number of components after filtering: "<<new_comp_size<<std::endl;
     // std::cout<<"Smallest component size is : "<<pgmiP.getSmallestSize()<<std::endl;
     // std::cout<<"Largest component size is: "<<pgmiP.getLargestSize()<<std::endl;
 
