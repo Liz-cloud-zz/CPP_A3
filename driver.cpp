@@ -1,7 +1,5 @@
-#define CATCH_CONFIG_MAIN  // This tells catch to provide a main() function. Only do this in one cpp file
-#include "catch.hpp"
-#include "PGMimageProcessor.h"
 #include "ConnectedComponent.h"
+#include "PGMimageProcessor.h"
 #include <string>
 #include <iostream>
 #include <string>
@@ -62,11 +60,11 @@ int main(int argc , char *argv[]){
             std::cout<<"Largest component size is: "<<pgmiP.getLargestSize()<<std::endl;
 
 //need to find a way to access the vector of connected components unique pointers
-            for(const auto & container : pgmiP.concomp_vector){
-                auto conncomp=container.get();
-                pgmiP.printComponentData(conncomp);
+            // for(const auto & container : pgmiP.concomp_vector){
+            //     auto conncomp=container.get();
+            //     pgmiP.printComponentData(conncomp);
 
-            }
+            // }
 
         }
         else if ((std::string(argv[arguments]))=="-w")
@@ -80,47 +78,10 @@ int main(int argc , char *argv[]){
                 std::cout<<"Writting success! :)"<<std::endl;
 
             }
-            else{std::cout<<"Writting unsuccessful:("<<std::endl}
+            else{std::cout<<"Writting unsuccessful:("<<std::endl;}
         }
         arguments++;
     }
  return 0;
 }
 
-// TEST_CASE("PGMimageProcessor class"){
-//     SECTION("Default Constructor"){
-//         MFNLIN003::PGMimageProcessor pgmiP;
-
-//         REQUIRE(pgmiP.filename==nullptr);
-//         // REQUIRE(pgmiP.checkForeGround()==false);
-//         // REQUIRE(pgmiP.extractComponents()==0);
-//         // REQUIRE(pgmiP.filterComponentsBySize()==0);
-//         // REQUIRE(pgmiP.getLargestSize()==0);
-//         // REQUIRE(pgmiP.getSmallestSize()==0);
-//         // REQUIRE(pgmiP.writeComponents()==false);
-//     }
-//     SECTION("Custom Constructor"){
-//         MFNLIN003::PGMimageProcessor pgmiP("~/examples/chess.pgm");
-//         REQUIRE(pgmiP.filename=="~/examples/chess.pgm");
-
-//         // REQUIRE(pgmiP.checkForeGround()==true);
-//         // REQUIRE(pgmiP.extractComponents()!=0);
-//         // REQUIRE(pgmiP.filterComponentsBySize()!=0);
-//         // REQUIRE(pgmiP.getLargestSize()!=0);
-//         // REQUIRE(pgmiP.getSmallestSize()!=0);
-//         // REQUIRE(pgmiP.writeComponents()==true);
-//     }
-
-//     SECTION("Copy Constructor"){
-//         MFNLIN003::PGMimageProcessor pgmiP("~/examples/chess.pgm");
-//         MFNLIN003::PGMimageProcessor pgmiP2(pgmiP);
-
-//         REQUIRE(pgmiP.filename==pgmiP2.filename);
-//     }
-//     SECTION("MOve Constructor"){
-//         MFNLIN003::PGMimageProcessor pgmiP("~/examples/chess.pgm");
-//         MFNLIN003::PGMimageProcessor pgmiP2(std::move(pgmiP));
-//         REQUIRE(pgmiP.filename==pgmiP2.filename);
-//     }
-    
-// }

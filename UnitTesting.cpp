@@ -5,7 +5,7 @@
 TEST_CASE("PGMimageProcessor class"){
     SECTION("Default Constructor"){
         MFNLIN003::PGMimageProcessor pgmiP;
-        REQUIRE();
+        REQUIRE(pgmiP.filename=="");
     }
     SECTION("Custom Constructor"){
         MFNLIN003::PGMimageProcessor pgmiP("~/examples/chess.pgm");

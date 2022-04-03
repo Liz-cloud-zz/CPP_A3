@@ -7,8 +7,8 @@
 #include <iomanip>
 #include <utility>
 #include <memory>
-#include "PGMimageProcessor.h"
 #include "ConnectedComponent.h"
+#include "PGMimageProcessor.h"
 #include <bits/stdc++.h>
 
  //constructors
@@ -381,20 +381,13 @@ after this operation should be returned.
  * @return int 
  */
 int MFNLIN003::PGMimageProcessor::filterComponentsBySize(int minSize, int maxSize){
-    
-    //remove > maxSize
-    MFNLIN003::PGMimageProcessor::concomp_vector.erase(std::remove_if(
-            MFNLIN003::PGMimageProcessor::concomp_vector.begin(),
-            MFNLIN003::PGMimageProcessor::concomp_vector.end(),
-            [](const auto &conncomp ){ return (conncomp.get().num_pixels>maxSize);})
-            ,MFNLIN003::PGMimageProcessor::concomp_vector.end());
-    
-    //remove <minSize
-     MFNLIN003::PGMimageProcessor::concomp_vector.erase(std::remove_if(
-            MFNLIN003::PGMimageProcessor::concomp_vector.begin(),
-            MFNLIN003::PGMimageProcessor::concomp_vector.end(),
-            [](const auto &conncomp ){ return (conncomp.get().num_pixels<minSize);})
-            ,MFNLIN003::PGMimageProcessor::concomp_vector.end());
+        for(int i=0 ;i<MFNLIN003::PGMimageProcessor::concomp_vector.size();++i){
+            auto conncomp=MFNLIN003::PGMimageProcessor::concomp_vector[i].get();
+            size_t num_pix=conncomp->num_pixels;
+            if(num_pix<minSize || num_pix>maxSize){
+                MFNLIN003::PGMimageProcessor::concomp_vector.erase(concomp_vector.begin()+i);
+            }
+        }
             
   return MFNLIN003::PGMimageProcessor::concomp_vector.size();
 }
