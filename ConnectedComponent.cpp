@@ -42,18 +42,63 @@ MFNLIN003::ConnectedComponent::ConnectedComponent(const ConnectedComponent & cc)
     //  std::cout << "Copy Constructor FOR CC"<<std::endl;
      this->id=cc.id;
      this->num_pixels=cc.num_pixels;
-     this->coordinates=cc.coordinates;
+     if(!cc.coordinates.empty()){
+         for(const auto & pair : cc.coordinates){
+            this->coordinates.push_back(pair);
+         }
+     }
 }
 
 /**
- * @brief MOve Constructor for Connected Component
+ * @brief Move Constructor for Connected Component
  * 
  * @param cc 
- * @return MFNLIN003::ConnectedComponent:: 
  */
-MFNLIN003::ConnectedComponent:: ConnectedComponent(ConnectedComponent && cc){
+MFNLIN003::ConnectedComponent::ConnectedComponent(ConnectedComponent && cc){
     //  std::cout << "Move Constructor for CC"<<std::endl;
      this->id=cc.id;
      this->num_pixels=cc.num_pixels;
+     
      this->coordinates=std::move(cc.coordinates);
+}
+/**
+ * @brief Copy assignment for Connected component
+ * 
+ * @param cc 
+ * @return MFNLIN003::ConnectedComponent& 
+ */
+MFNLIN003::ConnectedComponent & MFNLIN003::ConnectedComponent::operator=(const MFNLIN003::ConnectedComponent & cc ){
+    if(this!= & cc){
+        this->id=cc.id;
+        this->num_pixels=cc.num_pixels;
+        if(!this->coordinates.empty()){
+            this->coordinates.clear();
+        }
+        if(!cc.coordinates.empty()){
+            for(const auto &  pair: cc.coordinates){
+               this->coordinates.push_back(pair);
+            }
+        }
+    }
+    return *this;
+}
+
+/**
+ * @brief Move Assignment for COnnected Component
+ * 
+ * @param cc 
+ * @return MFNLIN003::ConnectedComponent& 
+ */
+MFNLIN003::ConnectedComponent & MFNLIN003::ConnectedComponent::operator=(MFNLIN003::ConnectedComponent && cc ){
+    if(this!= & cc){
+        this->id=cc.id;
+        this->num_pixels=cc.num_pixels;
+        if(!this->coordinates.empty()){
+            this->coordinates.clear();
+        }
+        if(!cc.coordinates.empty()){
+            this->coordinates=std::move(cc.coordinates);
+        }
+    }
+    return *this;
 }

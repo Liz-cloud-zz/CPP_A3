@@ -17,6 +17,7 @@ namespace MFNLIN003
            std::vector< std::pair<int,int> >coordinates;// store the pixels in that component ((x,y) pairs)
 
             //constuctors:
+            
             //constuctor
             ConnectedComponent(int id, int num_pixels);
             //destructor
@@ -25,5 +26,9 @@ namespace MFNLIN003
             ConnectedComponent(const ConnectedComponent & cc);
             //Move Constructor
             ConnectedComponent(ConnectedComponent && cc);
+            //Copy Assignment 
+            ConnectedComponent & operator=(const ConnectedComponent &cc);
+            //Move Assignment
+            ConnectedComponent & operator=(ConnectedComponent && cc);
     };
 }
