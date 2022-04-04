@@ -16,9 +16,15 @@ driver.o: driver.cpp
 
 run:
 	./findcomp.exe -s 3 1000 -t 128 -w output.pgm -p examples/chess.pgm
+	
+UnitTesting.exe: ConnectedComponent.o PGMimageProcessor.o UnitTesting.o
+	$(CC) ConnectedComponent.o PGMimageProcessor.o UnitTesting.o -o UnitTesting.exe $(CCFLAGS)
 
-UnitTestCases.exe: UnitTestCases.cpp
-	$(CC) UnitTestCases.cpp -o UnitTestCases.exe $(CCFLAGS)
+UnitTesting.o: UnitTesting.cpp
+	$(CC) -c UnitTesting.cpp -o UnitTesting.o $(CCFLAGS)
+
+run2:
+	./UnitTesting.exe
 
 clean:
 	rm *.o *.exe *.pgm
