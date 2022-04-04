@@ -20,8 +20,8 @@ int main(){
 
     }
     else{std::cout<<"Writting unsuccessful:("<<std::endl;}
-    // int new_comp_size=pgmiP.filterComponentsBySize(3,250);
-    // std::cout<<"number of components after filtering: "<<new_comp_size<<std::endl;
+    int new_comp_size=pgmiP.filterComponentsBySize(3,250);
+    std::cout<<"number of components after filtering: "<<new_comp_size<<std::endl;
     std::cout<<"Smallest component size is : "<<pgmiP.getSmallestSize()<<std::endl;
     std::cout<<"Largest component size is: "<<pgmiP.getLargestSize()<<std::endl;
 

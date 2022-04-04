@@ -194,7 +194,7 @@ unsigned char * MFNLIN003::PGMimageProcessor::readFile(){
  * @return false 
  */
 bool MFNLIN003::PGMimageProcessor::writeComponents(const std::string & outFileName){
-    std::cout<<"output connected components image"<<std::endl;
+
     std::ofstream ofstream;
     int image[MFNLIN003::PGMimageProcessor::rows][MFNLIN003::PGMimageProcessor::columns]={0};//initialise it zero
         //Loop thru cointainer and write 255 as pixel and coordinate
@@ -261,9 +261,8 @@ bool MFNLIN003::PGMimageProcessor::checkForeGround(unsigned char character,unsig
  * @return int 
  */
 int MFNLIN003::PGMimageProcessor::extractComponents(unsigned char threshold, int minValidSize){
-      std::cout<<"extract components"<<std::endl;
+    //   std::cout<<"extract components"<<std::endl;
       unsigned char* image0=readFile();
-    //   std::cout <<"read file"<<std::endl;
       size_t num_of_comp=0;//num of components
 
   
@@ -272,7 +271,6 @@ int MFNLIN003::PGMimageProcessor::extractComponents(unsigned char threshold, int
       for(size_t i=0;i<MFNLIN003::PGMimageProcessor::rows;++i){
           image[i]=new unsigned char [MFNLIN003::PGMimageProcessor::columns];
      }
-    // std::cout <<"Convert 1d to 2d"<<std::endl;
 
     //populate array with 1D Array contents
       int counter=0;
@@ -303,6 +301,7 @@ int MFNLIN003::PGMimageProcessor::extractComponents(unsigned char threshold, int
                 }
 
                 if(MFNLIN003::PGMimageProcessor::checkForeGround(image[y][x],threshold,minValidSize)){//check if point is foreground
+                    // std::cout<<"found forground "<<std::endl;
                      //make a connected component
                     MFNLIN003::ConnectedComponent cc(id,1);
                     cc.coordinates.push_back(std::make_pair(y,x));
@@ -316,7 +315,8 @@ int MFNLIN003::PGMimageProcessor::extractComponents(unsigned char threshold, int
                                 continue;
                             }
 
-                            if((float)image[i][j]==255){//check if neighbour is 255
+                            if(MFNLIN003::PGMimageProcessor::checkForeGround(image[i][j],threshold,minValidSize)){//check if neighbour is forground
+                                //    std::cout<<"found forground "<<std::endl;
                                 if(visited_comp[i][j]){//check if neighbour not yet processed
                                     continue;
                                 }
@@ -343,10 +343,12 @@ int MFNLIN003::PGMimageProcessor::extractComponents(unsigned char threshold, int
 
                                     //popping off candidate pixel coordinates from the queue,
                                     //and expanding/testing those, until the queue has been exhausted
+                                    //    std::cout<<"size: "<< temp_q.size()<<std::endl;
                                     while (!temp_q.empty())
                                     {
                                         std::pair<int,int>p=temp_q.front();
-                                        if((float)image[p.first][p.second]==255){//check if neighbour is 255
+                                        if(image[p.first][p.second]==255){//check if neighbour is forground
+                                            //    std::cout<<"found forground "<<std::endl;
                                             if(visited_comp[p.first][p.second]){//check if neighbour not yet processed
                                                 continue;
                                             }
