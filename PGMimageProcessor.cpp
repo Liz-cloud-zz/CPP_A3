@@ -199,13 +199,13 @@ bool MFNLIN003::PGMimageProcessor::writeComponents(const std::string & outFileNa
     int image[MFNLIN003::PGMimageProcessor::rows][MFNLIN003::PGMimageProcessor::columns]={0};//initialise it zero
         //Loop thru cointainer and write 255 as pixel and coordinate
     for(const auto & container : MFNLIN003::PGMimageProcessor::concomp_vector){
-        // auto conncomp=container.get();
-        // for(const auto & point :conncomp->coordinates ){
-        //     image[point.first][point.second]=255;
-        // }
-           for(const auto & point :container.coordinates){
+        auto conncomp=container.get();
+        for(const auto & point :conncomp->coordinates ){
             image[point.first][point.second]=255;
         }
+        //    for(const auto & point :container.coordinates){
+        //     image[point.first][point.second]=255;
+        // }
     }
 
     //write the first 4 lines
@@ -277,103 +277,99 @@ int MFNLIN003::PGMimageProcessor::extractComponents(unsigned char threshold, int
       for(size_t y=0;y<MFNLIN003::PGMimageProcessor::rows;++y){
         for(size_t x=0;x<MFNLIN003::PGMimageProcessor::columns;++x){
               image[y][x]=image0[counter];
-                // std::cout<<image[x][y]<<std::endl;
               counter++;
         }
       }
       delete[] image0;//clear memory
-    //   std::cout <<"done populating array"<<std::endl;
     //make a corresponding 2d array that marks the points checked in the 2d image
       bool visited_comp[MFNLIN003::PGMimageProcessor::rows][MFNLIN003::PGMimageProcessor::columns]={{false}};
-    //   std::cout <<"Created corresponding bool 2d array"<<std::endl;
-        //Extract components
-        int id=0;//unique id for component
-        
+    int id=0;//unique id for component
 
-         //push it’s non-tested N/S/E/W neighbour
-        //coordinates onto a queue (initially empty)
-        std::queue<std::pair<int,int>>temp_q;
-        for(size_t y=0;y<MFNLIN003::PGMimageProcessor::rows;++y){
-            for(size_t x=0;x<MFNLIN003::PGMimageProcessor::columns;++x){
-                std::pair<int, int>pair=std::make_pair(y,x);
-                if((float)image[y][x]==0 || (visited_comp[y][x])){//check if char has been visited
-                    continue;//go to next point
-                }
+        //push it’s non-tested N/S/E/W neighbour
+    //coordinates onto a queue (initially empty)
+    std::queue<std::pair<int,int>>temp_q;
+    for(size_t y=0;y<MFNLIN003::PGMimageProcessor::rows;++y){
+        for(size_t x=0;x<MFNLIN003::PGMimageProcessor::columns;++x){
+            std::pair<int, int>pair=std::make_pair(y,x);
+            if((float)image[y][x]==0 || (visited_comp[y][x])){//check if char has been visited
+                continue;//go to next point
+            }
 
-                if(MFNLIN003::PGMimageProcessor::checkForeGround(image[y][x],threshold,minValidSize)){//check if point is foreground
-                    // std::cout<<"found forground "<<std::endl;
-                     //make a connected component
-                    MFNLIN003::ConnectedComponent cc(id,1);
-                    cc.coordinates.push_back(std::make_pair(y,x));
-                    for(size_t i=y-1;i<y+2;++i){
-                        for(size_t j=x-1;j<x+2;++j){
-                            //check for index out of bounds errors:
-                            if(i>MFNLIN003::PGMimageProcessor::rows-1 || i<0){
+            if(MFNLIN003::PGMimageProcessor::checkForeGround(image[y][x],threshold,minValidSize)){//check if point is foreground
+                // std::cout<<"found forground "<<std::endl;
+                    //make a connected component
+                MFNLIN003::ConnectedComponent cc(id,1);
+                cc.coordinates.push_back(std::make_pair(y,x));
+
+                for(size_t i=y-1;i<y+2;++i){
+                    for(size_t j=x-1;j<x+2;++j){
+                        //check for index out of bounds errors:
+                        if(i>MFNLIN003::PGMimageProcessor::rows-1 || i<0){
+                            continue;
+                        }
+                        if(j>MFNLIN003::PGMimageProcessor::columns ||j<0){
+                            continue;
+                        }
+
+                        if(MFNLIN003::PGMimageProcessor::checkForeGround(image[i][j],threshold,minValidSize)){//check if neighbour is forground
+                            //    std::cout<<"found forground "<<std::endl;
+                            if(visited_comp[i][j]){//check if neighbour not yet processed
                                 continue;
                             }
-                            if(j>MFNLIN003::PGMimageProcessor::columns ||j<0){
-                                continue;
-                            }
+                            else{
+                                //add neighbour to connected component
+                                cc.num_pixels++;
+                                cc.coordinates.push_back(std::make_pair(i,i));
 
-                            if(MFNLIN003::PGMimageProcessor::checkForeGround(image[i][j],threshold,minValidSize)){//check if neighbour is forground
-                                //    std::cout<<"found forground "<<std::endl;
-                                if(visited_comp[i][j]){//check if neighbour not yet processed
-                                    continue;
+                                for(size_t y_c=i-1;y_c<i+2;++y_c){
+                                    for(size_t x_c=j-1;x_c<j+2;++x_c){
+                                        //check for index out of bounds errors:
+                                        if(y_c>MFNLIN003::PGMimageProcessor::rows-1 || y_c<0){
+                                            continue;
+                                        }
+                                        if(x_c >MFNLIN003::PGMimageProcessor::columns |x_c<0){
+                                            continue;
+                                        }
+                                        temp_q.push(std::make_pair(y_c,x_c));
+                                    }
                                 }
-                                else{
-                                    //add neighbour to connected component
-                                    cc.num_pixels++;
-                                    cc.coordinates.push_back(std::make_pair(i,i));
+                                //set the current foreground pixel added to your component to 0 in the thresholded image
+                                visited_comp[i][j]=true;
+                                image[i][j]=0;
 
-                                    for(size_t y_c=i-1;y_c<i+2;++y_c){
-                                        for(size_t x_c=j-1;x_c<j+2;++x_c){
-                                            //check for index out of bounds errors:
-                                            if(y_c>MFNLIN003::PGMimageProcessor::rows-1 || y_c<0){
-                                                continue;
-                                            }
-                                            if(x_c >MFNLIN003::PGMimageProcessor::columns |x_c<0){
-                                                continue;
-                                            }
-                                            temp_q.push(std::make_pair(y_c,x_c));
+                                //popping off candidate pixel coordinates from the queue,
+                                //and expanding/testing those, until the queue has been exhausted
+                                //    std::cout<<"size: "<< temp_q.size()<<std::endl;
+                                while (!temp_q.empty())
+                                {
+                                    std::pair<int,int>p=temp_q.front();
+                                    if(image[p.first][p.second]==255){//check if neighbour is forground
+                                        if(visited_comp[p.first][p.second]){//check if neighbour not yet processed
+                                            continue;
                                         }
+                                        else{
+                                            //add neighbour to connected component
+                                            cc.num_pixels++;
+                                            cc.coordinates.push_back(p);
+                                        }    
                                     }
-                                    //set the current foreground pixel added to your component to 0 in the thresholded image
-                                    visited_comp[i][j]=true;
-                                    image[i][j]=0;
-
-                                    //popping off candidate pixel coordinates from the queue,
-                                    //and expanding/testing those, until the queue has been exhausted
-                                    //    std::cout<<"size: "<< temp_q.size()<<std::endl;
-                                    while (!temp_q.empty())
-                                    {
-                                        std::pair<int,int>p=temp_q.front();
-                                        if(image[p.first][p.second]==255){//check if neighbour is forground
-                                            //    std::cout<<"found forground "<<std::endl;
-                                            if(visited_comp[p.first][p.second]){//check if neighbour not yet processed
-                                                continue;
-                                            }
-                                            else{
-                                                //add neighbour to connected component
-                                                cc.num_pixels++;
-                                                cc.coordinates.push_back(p);
-                                            }    
-                                        }
-                                        temp_q.pop();
-                                    }
+                                    temp_q.pop();
                                 }
                             }
                         }
                     }
-                    MFNLIN003::PGMimageProcessor::concomp_vector.push_back(cc);
-                    id++;
                 }
-                visited_comp[y][x]=true;
-                image[y][x]=(unsigned char )0;
-                // std::unique_ptr<MFNLIN003::ConnectedComponent> up=std::make_unique<MFNLIN003::ConnectedComponent>(cc);
-                // concomp_vector.push_back(up);//add connected commponent object to vector container  
-                
+                auto up=std::make_shared<ConnectedComponent>(cc);
+                MFNLIN003::PGMimageProcessor::concomp_vector.push_back(up);
+                id++;
             }
+            visited_comp[y][x]=true;
+            image[y][x]=(unsigned char )0;
+            // std::unique_ptr<MFNLIN003::ConnectedComponent> up=std::make_unique<MFNLIN003::ConnectedComponent>(cc);
+            // concomp_vector.push_back(up);//add connected commponent object to vector container  
+            
         }
+    }
     //clear memory
     for(size_t y=0;y<MFNLIN003::PGMimageProcessor::rows;++y){
             delete [] image[y];
@@ -396,21 +392,21 @@ after this operation should be returned.
  * @return int 
  */
 int MFNLIN003::PGMimageProcessor::filterComponentsBySize(int minSize, int maxSize){
-        // for(int i=0 ;i<MFNLIN003::PGMimageProcessor::concomp_vector.size();++i){
-        //     auto conncomp=MFNLIN003::PGMimageProcessor::concomp_vector[i].get();
-        //     size_t num_pix=conncomp->num_pixels;
-        //     if(num_pix<minSize || num_pix>maxSize){
-        //         MFNLIN003::PGMimageProcessor::concomp_vector.erase(concomp_vector.begin()+i);
-        //     }
-        // }
-
         for(int i=0 ;i<MFNLIN003::PGMimageProcessor::concomp_vector.size();++i){
-            int num_pix=MFNLIN003::PGMimageProcessor::concomp_vector[i].num_pixels;
-            // std::cout<<"got num of pixels "<<num_pix<<std::endl;
+            auto conncomp=MFNLIN003::PGMimageProcessor::concomp_vector[i].get();
+            size_t num_pix=conncomp->num_pixels;
             if(num_pix<minSize || num_pix>maxSize){
                 MFNLIN003::PGMimageProcessor::concomp_vector.erase(concomp_vector.begin()+i);
             }
         }
+
+        // for(int i=0 ;i<MFNLIN003::PGMimageProcessor::concomp_vector.size();++i){
+        //     int num_pix=MFNLIN003::PGMimageProcessor::concomp_vector[i].num_pixels;
+        //     // std::cout<<"got num of pixels "<<num_pix<<std::endl;
+        //     if(num_pix<minSize || num_pix>maxSize){
+        //         MFNLIN003::PGMimageProcessor::concomp_vector.erase(concomp_vector.begin()+i);
+        //     }
+        // }
   return MFNLIN003::PGMimageProcessor::concomp_vector.size();
 }
 
@@ -422,19 +418,19 @@ int MFNLIN003::PGMimageProcessor::filterComponentsBySize(int minSize, int maxSiz
  int MFNLIN003::PGMimageProcessor::getLargestSize() const{
      int max=0;
     //Loop thru cointainer
-    // for(const auto & container : MFNLIN003::PGMimageProcessor::concomp_vector){
-    //     auto conncomp=container.get();
-    //     if(conncomp->num_pixels>max){
-    //         max=conncomp->num_pixels;
-    //     }
-    // }
-
     for(const auto & container : MFNLIN003::PGMimageProcessor::concomp_vector){
-        auto conncomp=container;
-        if(conncomp.num_pixels>max){
-            max=conncomp.num_pixels;
+        auto conncomp=container.get();
+        if(conncomp->num_pixels>max){
+            max=conncomp->num_pixels;
         }
-}
+    }
+
+//     for(const auto & container : MFNLIN003::PGMimageProcessor::concomp_vector){
+//         auto conncomp=container;
+//         if(conncomp.num_pixels>max){
+//             max=conncomp.num_pixels;
+//         }
+// }
     return max;
 }
 /**
@@ -445,18 +441,18 @@ int MFNLIN003::PGMimageProcessor::filterComponentsBySize(int minSize, int maxSiz
 int MFNLIN003::PGMimageProcessor::getSmallestSize() const{
      int min=1000;
     //Loop thru cointainer
-    // for(const auto & container : MFNLIN003::PGMimageProcessor::concomp_vector){
-    //     auto conncomp=container.get();
-    //     if(conncomp->num_pixels<min){
-    //         min=conncomp->num_pixels;
-    //     }
-    // }
     for(const auto & container : MFNLIN003::PGMimageProcessor::concomp_vector){
-        auto conncomp=container;
-        if(conncomp.num_pixels<min){
-            min=conncomp.num_pixels;
+        auto conncomp=container.get();
+        if(conncomp->num_pixels<min){
+            min=conncomp->num_pixels;
         }
     }
+    // for(const auto & container : MFNLIN003::PGMimageProcessor::concomp_vector){
+    //     auto conncomp=container;
+    //     if(conncomp.num_pixels<min){
+    //         min=conncomp.num_pixels;
+    //     }
+    // }
     return min;
 }
 
@@ -468,10 +464,14 @@ print out to std::cout: component ID, number of pixels
  * @param theComponent 
  */
 void MFNLIN003::PGMimageProcessor::printComponentData(const MFNLIN003::ConnectedComponent & theComponent)const{
-    std::cout<< "Component ID: "<<theComponent.id<<"Number of pixels: "<<theComponent.num_pixels<<std::endl;
+    std::cout<< "Component ID: "<<theComponent.id<<" Number of pixels: "<<theComponent.num_pixels<<std::endl;
 
 }
 
-std::vector<MFNLIN003::ConnectedComponent> &MFNLIN003::PGMimageProcessor::getVector(){
+// std::vector<MFNLIN003::ConnectedComponent> &MFNLIN003::PGMimageProcessor::getVector(){
+//     return this->concomp_vector;
+// }
+
+std::vector<std::shared_ptr<MFNLIN003::ConnectedComponent>> & MFNLIN003::PGMimageProcessor::getVector(){
     return this->concomp_vector;
 }

@@ -18,8 +18,8 @@ namespace MFNLIN003{
     class PGMimageProcessor{
         private:
             //container storing smart pointers to each ConnectedComponent
-            // std::vector<std::unique_ptr<ConnectedComponent>> concomp_vector;
-            std::vector<ConnectedComponent> concomp_vector;
+            std::vector<std::shared_ptr<ConnectedComponent>> concomp_vector;
+            // std::vector<ConnectedComponent> concomp_vector;
         public :
             int rows; //width of image
             int columns;// height of image
@@ -47,7 +47,8 @@ namespace MFNLIN003{
         int getLargestSize(void) const;// return number of pixels in largest component
         int getSmallestSize(void) const;// return number of pixels in smallest component
         void printComponentData(const ConnectedComponent & theComponent) const;//print the data for a component
-        std::vector<MFNLIN003::ConnectedComponent> & getVector();//get vector of components
+        // std::vector<MFNLIN003::ConnectedComponent> & getVector();//get vector of components
+        std::vector<std::shared_ptr<MFNLIN003::ConnectedComponent>> & getVector();//get vector
 
     };
 }
